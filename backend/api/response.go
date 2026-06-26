@@ -7,13 +7,13 @@ import (
 
 type APIResponse struct {
 	Data  any       `json:"data"`
-	Error *APIError `json:"error"`
+	Error *APIError `json:"error,omitempty"`
 }
 
 type APIError struct {
-	ErrorType ErrorType         `json:"errorCode"`
+	Type      ErrorType         `json:"type"`
 	Message   string            `json:"message"`
-	Details   map[string]string `json:"details"`
+	Details   map[string]string `json:"details,omitempty"`
 }
 
 func WriteSuccess(w http.ResponseWriter, status int, data any) {
@@ -30,7 +30,7 @@ func WriteError(w http.ResponseWriter, status int, errType ErrorType, message st
 	w.WriteHeader(status)
 
 	err := APIError{
-		ErrorType: errType,
+		Type:      errType,
 		Message:   message,
 		Details:   details,
 	}
