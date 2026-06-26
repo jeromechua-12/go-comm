@@ -1,9 +1,18 @@
-function App() {
+import { BrowserRouter, Routes, Route } from "react-router";
+import Home from "./pages/homepage";
+import SignupPage from "./pages/user/signup";
+import LoginPage from "./pages/user/login";
+import "./App.css"
 
+function App() {
   return (
-      <p>
-        Hello from Go-Comm's homepage!
-      </p>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
