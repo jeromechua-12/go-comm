@@ -40,3 +40,7 @@ func WriteError(w http.ResponseWriter, status int, errType ErrorType, message st
 		Error: &err,
 	})
 }
+
+func WriteServerError(w http.ResponseWriter) {
+	WriteError(w, http.StatusInternalServerError, ErrInternal, "Internal Server Error. Please try again later.", nil)	
+}
