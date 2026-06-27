@@ -3,20 +3,25 @@ package gateway
 import (
 	"net/http"
 
-	"github.com/jeromechua-12/go-comm/internal/auth"
+	"github.com/jeromechua-12/go-comm/internal/middleware"
 
 	"github.com/justinas/alice"
 )
 
-func NewRouter(authHandler *auth.Handler) http.Handler {
+type Registrar interface {
+	RegisterRoutes(*http.ServeMux)
+}
+
+func NewRouter(registrars ...Registrar) http.Handler {
 	mux := http.NewServeMux()
 
 	// add routes
-	mux.HandleFunc("POST /api/user/signup", authHandler.UserSignup)
-	mux.HandleFunc("POST /api/user/login", authHandler.UserLogin)
+	for _, r := range registrars {
+		r.RegisterRoutes(mux)
+	}
 
 	// middlewares
-	chain := alice.New(CORSMiddleware)
+	chain := alice.New(middleware.CORSMiddleware)
 
 	return chain.Then(mux)
 }

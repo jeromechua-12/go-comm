@@ -17,6 +17,11 @@ func NewHandler(s *service) *Handler {
 	return &Handler{svc: s}
 }
 
+func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("POST /api/user/signup", h.UserSignup)
+	mux.HandleFunc("POST /api/user/login", h.UserLogin)
+}
+
 func (h *Handler) UserSignup(w http.ResponseWriter, r *http.Request) {
 	// decode json form data
 	var form UserSignupForm
