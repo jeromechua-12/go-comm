@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/jeromechua-12/go-comm/api"
 )
@@ -42,18 +43,43 @@ func (h *Handler) UserSignup(w http.ResponseWriter, r *http.Request) {
 			fieldErrors["email"] = "Email address is already in use"
 			api.WriteError(w, http.StatusUnprocessableEntity, api.ErrValidation, "Validation Failed", fieldErrors)
 			return
-		} else {
-			api.WriteError(
-				w,
-				http.StatusInternalServerError,
-				api.ErrInternal,
-				"Internal Server Error. Please try again later.",
-				nil,
-			)
-			return
 		}
+		api.WriteServerError(w)
+		return
 	}
 
 	// no error, send successful response
 	api.WriteSuccess(w, http.StatusCreated, "User successfully created")
+}
+
+func (h *Handler) UserLogin(w http.ResponseWriter, r *http.Request) {
+	// decode json form data
+	var form UserLoginForm
+
+	err := json.NewDecoder(r.Body).Decode(&form)
+	if err != nil {
+		api.WriteError(w, http.StatusBadRequest, api.ErrBadRequest, "Bad Request", nil)
+		return
+	}
+
+	authRes, err := h.svc.Authenticate(r.Context(), form)
+	if err != nil {
+		if errors.Is(err, ErrBadCredentials) {
+			api.WriteError(w, http.StatusUnauthorized, api.ErrBadCredentials, "Invalid Email or Password", nil)
+		}
+		api.WriteServerError(w)
+		return
+	}
+
+	accessCookie := http.Cookie{
+		Name: "access_token",
+		Value: authRes.AccessToken,
+		Path: "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge: int(1 * time.Hour / time.Second),
+	}
+
+	http.SetCookie(w, &accessCookie)
+	api.WriteSuccess(w, http.StatusCreated, authRes.UserInfo)
 }

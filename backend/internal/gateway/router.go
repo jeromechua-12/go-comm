@@ -13,6 +13,7 @@ func NewRouter(authHandler *auth.Handler) http.Handler {
 
 	// add routes
 	mux.HandleFunc("POST /api/user/signup", authHandler.UserSignup)
+	mux.HandleFunc("POST /api/user/login", authHandler.UserLogin)
 
 	// middlewares
 	chain := alice.New(CORSMiddleware)

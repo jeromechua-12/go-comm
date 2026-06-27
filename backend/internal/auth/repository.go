@@ -9,10 +9,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-var (
-	ErrDuplicateEmail = errors.New("user: duplicate email")
-)
-
 type repository struct {
 	db *sql.DB
 }
@@ -35,4 +31,21 @@ func (r *repository) Insert(ctx context.Context, name, email, password string) e
 		return err
 	}
 	return nil
+}
+
+// Returns the name of a user with email. If bad credential, return error.
+func (r* repository) Fetch(ctx context.Context, email string) (*User, error) {
+	var user User
+
+	query := `SELECT id, name, email, hashed_password, role, created_at FROM users WHERE email = ?` 
+
+	err := r.db.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Name, &user.Email, &user.HashedPassword, &user.Role, &user.CreatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrBadCredentials
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }
