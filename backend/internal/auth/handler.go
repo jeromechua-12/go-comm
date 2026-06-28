@@ -71,6 +71,7 @@ func (h *Handler) UserLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, ErrBadCredentials) {
 			api.WriteError(w, http.StatusUnauthorized, api.ErrBadCredentials, "Invalid Email or Password", nil)
+			return
 		}
 		api.WriteServerError(w)
 		return
