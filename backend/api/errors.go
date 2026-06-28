@@ -8,4 +8,6 @@ const (
 	ErrBadRequest      ErrorType = "bad_request"
 	ErrValidation      ErrorType = "validation_error"
 	ErrBadCredentials  ErrorType = "bad_credentials"
+	ErrUnauthorized    ErrorType = "unauthorized"
+	ErrAccessExpired   ErrorType = "access_token_expired"
 )
