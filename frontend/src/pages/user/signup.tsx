@@ -20,6 +20,7 @@ interface FieldErrors {
 function SignupPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>();
   const [formError, setFormError] = useState("");
+  const navigate = useNavigate()
 
   const apiBase= import.meta.env.VITE_API_BASE_URL;
 
@@ -56,10 +57,8 @@ function SignupPage() {
 
       // navigate to login page
       console.log("Account created! Please log in")
-      alert("Account created! Please log in")
-
-      const navigate = useNavigate()
       navigate("/login")
+
     } catch (err) {
       console.log(err);
       setFormError(err.message);
