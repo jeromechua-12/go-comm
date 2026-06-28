@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/jeromechua-12/go-comm/internal/middleware"
@@ -12,7 +13,7 @@ type Registrar interface {
 	RegisterRoutes(*http.ServeMux)
 }
 
-func NewRouter(registrars ...Registrar) http.Handler {
+func NewRouter(logger *slog.Logger, registrars ...Registrar) http.Handler {
 	mux := http.NewServeMux()
 
 	// add routes
@@ -21,7 +22,10 @@ func NewRouter(registrars ...Registrar) http.Handler {
 	}
 
 	// middlewares
-	chain := alice.New(middleware.CORSMiddleware)
+	chain := alice.New(
+		middleware.LoggingMiddleware(logger),
+		middleware.CORSMiddleware,
+	)
 
 	return chain.Then(mux)
 }

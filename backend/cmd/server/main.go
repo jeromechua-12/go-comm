@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	dsn := flag.String("dsn", os.Getenv("DSN"), "MySQL data source name")
 	flag.Parse()
@@ -42,7 +42,7 @@ func main() {
 
 	svr := http.Server{
 		Addr: ":8080",
-		Handler: gateway.NewRouter(authHandler),
+		Handler: gateway.NewRouter(logger, authHandler),
 		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
 	}
 

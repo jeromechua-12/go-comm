@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
 )
 
@@ -17,4 +18,22 @@ func CORSMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func LoggingMiddleware(logger *slog.Logger) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			var (
+				ip = r.RemoteAddr
+				proto = r.Proto
+				method = r.Method
+				uri = r.URL.RequestURI()
+			)
+
+			logger.Info("received request", "ip", ip, "proto", proto, "method", method, "uri", uri)
+
+			next.ServeHTTP(w, r)
+		}
+		return http.HandlerFunc(fn) 
+	}
 }
