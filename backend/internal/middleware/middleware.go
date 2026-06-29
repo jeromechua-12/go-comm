@@ -6,7 +6,7 @@ import (
 	"os"
 	"net/http"
 
-	"github.com/jeromechua-12/go-comm/api"
+	"github.com/jeromechua-12/go-comm/internal"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -51,10 +51,10 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 		cookie, err := r.Cookie("access_token")
 		if err != nil {
 			if errors.Is(err, http.ErrNoCookie) {
-				api.WriteError(w, http.StatusUnauthorized, api.ErrUnauthorized, "Unauthorized", nil)
+				internal.WriteError(w, http.StatusUnauthorized, internal.ErrUnauthorized, "Unauthorized", nil)
 				return
 			}
-			api.WriteServerError(w)
+			internal.WriteServerError(w)
 		}
 
 		tokenString := cookie.Value
@@ -72,11 +72,11 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 		// verify signature and expiry
 		switch {
 		case token.Valid:
-			api.WriteSuccess(w, http.StatusOK, nil)	
+			internal.WriteSuccess(w, http.StatusOK, nil)	
 		case errors.Is(err, jwt.ErrTokenExpired):
-			api.WriteError(w, http.StatusUnauthorized, api.ErrAccessExpired, "Access token expired", nil)
+			internal.WriteError(w, http.StatusUnauthorized, internal.ErrAccessExpired, "Access token expired", nil)
 		default:
-			api.WriteError(w, http.StatusUnauthorized, api.ErrUnauthorized, "Unauthorized", nil)
+			internal.WriteError(w, http.StatusUnauthorized, internal.ErrUnauthorized, "Unauthorized", nil)
 		}
 
 		next.ServeHTTP(w, r)

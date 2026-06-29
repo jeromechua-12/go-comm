@@ -14,12 +14,12 @@ type service struct {
 	repo *repository
 }
 
-func NewService(r *repository) *service {
+func newService(r *repository) *service {
 	return &service{repo: r}
 }
 
 // Create new user using form credentials. Return error if bad credentials.
-func (s *service) Signup(ctx context.Context, form UserSignupForm) error {
+func (s *service) signup(ctx context.Context, form UserSignupForm) error {
 	// encrypt password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(form.Password), 12)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *service) Signup(ctx context.Context, form UserSignupForm) error {
 	}
 
 	// insert into db
-	err = s.repo.Insert(ctx, form.Name, form.Email, string(hashedPassword))
+	err = s.repo.insert(ctx, form.Name, form.Email, string(hashedPassword))
 	if err != nil {
 		return err
 	}
@@ -36,8 +36,8 @@ func (s *service) Signup(ctx context.Context, form UserSignupForm) error {
 }
 
 // Authenticate login credentials. Return AuthResult struct if successful. Else, return error
-func (s *service) Authenticate(ctx context.Context, form UserLoginForm) (*AuthResult, error) {
-	user, err := s.repo.Fetch(ctx, form.Email)
+func (s *service) authenticate(ctx context.Context, form UserLoginForm) (*AuthResult, error) {
+	user, err := s.repo.fetch(ctx, form.Email)
 	if err != nil {
 		return nil, err
 	}

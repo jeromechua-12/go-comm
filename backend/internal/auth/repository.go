@@ -13,11 +13,11 @@ type repository struct {
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) *repository {
+func newRepository(db *sql.DB) *repository {
 	return &repository{db: db}
 }
 
-func (r *repository) Insert(ctx context.Context, name, email, password string) error {
+func (r *repository) insert(ctx context.Context, name, email, password string) error {
 	query := `INSERT INTO users (name, email, hashed_password, role, created_at)
 	VALUES (?, ?, ?, 'customer', UTC_TIMESTAMP)`
 
@@ -34,7 +34,7 @@ func (r *repository) Insert(ctx context.Context, name, email, password string) e
 }
 
 // Returns the name of a user with email. If bad credential, return error.
-func (r* repository) Fetch(ctx context.Context, email string) (*User, error) {
+func (r* repository) fetch(ctx context.Context, email string) (*User, error) {
 	var user User
 
 	query := `SELECT id, name, email, hashed_password, role, created_at FROM users WHERE email = ?` 

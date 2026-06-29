@@ -1,4 +1,4 @@
-package api
+package internal
 
 // internal error types
 type ErrorType string

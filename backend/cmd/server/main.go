@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/jeromechua-12/go-comm/internal/auth"
-	"github.com/jeromechua-12/go-comm/internal/gateway"
 
 	"github.com/joho/godotenv"
 	_ "github.com/go-sql-driver/mysql"
@@ -36,13 +35,11 @@ func main() {
 	defer db.Close()
 
 	// initialise handlers
-	authRepo := auth.NewRepository(db)
-	authSvc := auth.NewService(authRepo)
-	authHandler := auth.NewHandler(authSvc)
+	authHandler := auth.New(db)
 
 	svr := http.Server{
 		Addr: ":8080",
-		Handler: gateway.NewRouter(logger, authHandler),
+		Handler: NewRouter(logger, authHandler),
 		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
 	}
 
